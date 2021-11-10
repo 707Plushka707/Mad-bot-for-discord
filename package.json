@@ -1,0 +1,26 @@
+{
+  "name": "mad-bot-for-discord",
+  "version": "1.0.0",
+  "description": "holy shit. this is a mad bot.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Windowsz/Mad-bot-for-discord.git"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Windows'z",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Windowsz/Mad-bot-for-discord/issues"
+  },
+  "homepage": "https://github.com/Windowsz/Mad-bot-for-discord#readme",
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
+}
