@@ -13,7 +13,7 @@ client.on("messageCreate", (msg) => {
   const text = msg.content;
   let RandomNumber = Math.floor(Math.random() * 4);
   let HaveDot = text.search(/[.]/g);
-  if (HaveDot >= 0 || text == "จุด") {
+  if ((HaveDot >= 0 || text == "จุด") && !text.startsWith('http')) {
     msg.react("🖕");
     msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
   }
