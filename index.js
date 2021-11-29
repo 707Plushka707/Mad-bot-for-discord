@@ -22,4 +22,4 @@ client.on('messageCreate', msg => {
         msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
     }
 })
-client.login(process.env.TOKEN);
+client.login(secrets.TOKEN);
