@@ -18,6 +18,7 @@ client.on('messageCreate', msg => {
     let RandomNumber = Math.floor(Math.random() * 4);
     let HaveDot = text.search(/[.]/g);
     if ((HaveDot >= 0) || text == 'จุด') {
+        msg.react('🖕');
         msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
     }
 })
