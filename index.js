@@ -6,7 +6,7 @@ const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
 client.on("ready", () => {
-  console.log("Server Running ON Port 5000");
+  console.log("BOT is running");
 });
 client.on("messageCreate", (msg) => {
   const textArr = ["ควย", "เหี้ย", "ทำเหี้ย", "ทำส้นตีน"];
