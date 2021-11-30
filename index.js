@@ -15,7 +15,7 @@ client.on("messageCreate", async (msg) => {
   const AddOnText = ['', 'นักหนา', 'วะ'];
   const text = msg.content;
   let HaveDot = text.search(/[.]/g);
-  if (text.startsWith('!yt')) {
+  if (text.startsWith('!yt') && !!text.split('!yt ')[1]) {
     let cleanText = text.split('!yt ')[1];
   getYTList(cleanText).then(function (response) {
       // handle success
