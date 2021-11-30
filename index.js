@@ -10,33 +10,42 @@ const client = new Client({
 client.on("ready", () => {
   console.log("BOT is running");
 });
-client.on("messageCreate", (msg) => {
-  const textArr = ["ควย", "เหี้ย", "ทำเหี้ย", "ทำส้นตีน"];
+client.on("messageCreate", async (msg) => {
+  const textArr = ["ควย", "เหี้ย", "ทำเหี้ย", "ทำส้นตีน", "ทำมะเขือ", "ทำสากกะเบือ"];
+  const AddOnText = ['', 'นักหนา', 'วะ'];
   const text = msg.content;
-  let RandomNumber = Math.floor(Math.random() * 4);
   let HaveDot = text.search(/[.]/g);
   if (text.startsWith('!yt')) {
     let cleanText = text.split('!yt ')[1];
-    getMovieList(cleanText).then(function (response) {
+  getYTList(cleanText).then(function (response) {
       // handle success
-      console.log(response);
+      let responseList = response.data.items;
+      let responseListString = '';
+      for (let i = 0; i <responseList.length; i++) {
+        responseListString = responseListString + `${i+1}. https://www.youtube.com/watch?v=${responseList[i].id.videoId} \n`
+      }
+    msg.reply(responseListString);
     }).catch(function (error) {
       // handle error
       console.log(error);
     })
   } else {
     if (
-      (HaveDot >= 0) &&
-      !text.startsWith("http") &&
-      !text.startsWith("www")
+      (HaveDot >= 0) && (text.search(/(http)|(www)|(\d\.)/g) < 0)
     ) {
       msg.react("🖕");
-      msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
+      msg.reply(`จุด${textArr[RandomNumbers(6)]}ไร${AddOnText[RandomNumbers(3)]} <@${msg.author.id}>`);
+    } else if ((text.search(/[+]/g) >= 0) && (text.search(/(http)|(www)|(\d\.)/g) < 0)) {
+      msg.reply(`บวกหน้ามึงอะ <@${msg.author.id}>`);
     }
   }
 });
 client.login(process.env.TOKEN);
 
-getMovieList = (msg) => {
-  return axios.get(`https://www.googleapis.com/youtube/v3/search?access_token=&q=${msg}`, { headers: {'Authorization' : `Bearer ${tokenStr}`} });
+RandomNumbers = (maxNumber) => {
+ return Math.floor(Math.random() * maxNumber)
+};
+getYTList = (msg) => {
+  let path = encodeURI(`https://www.googleapis.com/youtube/v3/search?key=AIzaSyAfwXKluq4wVTQe2YYjTdJo_BPJuJl2_7g&q=${msg}`);
+  return axios.get(path);
 };
