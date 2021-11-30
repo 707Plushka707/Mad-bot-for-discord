@@ -1,5 +1,7 @@
 const { Client, Intents } = require("discord.js");
 const dotenv = require("dotenv");
+const axios = require("axios");
+
 dotenv.config();
 
 const client = new Client({
@@ -13,9 +15,28 @@ client.on("messageCreate", (msg) => {
   const text = msg.content;
   let RandomNumber = Math.floor(Math.random() * 4);
   let HaveDot = text.search(/[.]/g);
-  if ((HaveDot >= 0 || text == "จุด") && !text.startsWith('http')) {
-    msg.react("🖕");
-    msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
+  if (text.startsWith('!yt')) {
+    let cleanText = text.split('!yt ')[1];
+    getMovieList(cleanText).then(function (response) {
+      // handle success
+      console.log(response);
+    }).catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+  } else {
+    if (
+      (HaveDot >= 0) &&
+      !text.startsWith("http") &&
+      !text.startsWith("www")
+    ) {
+      msg.react("🖕");
+      msg.reply(`จุด${textArr[RandomNumber]}ไร <@${msg.author.id}>`);
+    }
   }
 });
 client.login(process.env.TOKEN);
+
+getMovieList = (msg) => {
+  return axios.get(`https://www.googleapis.com/youtube/v3/search?access_token=&q=${msg}`, { headers: {'Authorization' : `Bearer ${tokenStr}`} });
+};
