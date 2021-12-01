@@ -38,25 +38,25 @@ client.on("messageCreate", async (msg) => {
         })
       }
       break;
-    case '!checkprice':
-      if (text.split("!checkprice ")[1]) {
-        const priceText = text.split("!checkprice ")[1];
-        console.log(priceText);
-        let params = {};
-        params.pageSize = "5";
-        params.title = priceText;
-        // params.storeID = 21;
-        getGamePrice(params).then(function (response) {
+    case '!price':
+      if (text.split("!price ")[1]) {
+        const pText = text.split("!price ")[1];
+        console.log(pText);
+        getSteamGameList().then(function (response) {
           // handle success
-          // console.log(response.data);
-          let responseList = response.data;
+          console.log(response.data.applist.apps);
+          let responseList = response.data.applist.apps;
+          let rArray = filterItems(pText, responseList);
+          console.log(rArray);
           // let responseListString = '';
-          for (let i = 0; i <responseList.length; i++) {
-            // responseListString = `${i+1}. ${responseList[i].title} ราคา ${Math.round((responseList[i].salePrice * 33.72)* 1)}฿ ราคาเต็ม ${Math.round((responseList[i].normalPrice * 33.72)* 1)}฿ (ราคาคร่าวๆ)\n
-            // `
-            msg.channel.send({ embeds: [embedTextReturn(responseList[i])] });
+          if (rArray.length > 0) {
+            for (let i = 0; i < (rArray.length > 5 ? 5 : rArray.length); i++) {
+              console.log(rArray[i]);
+              // responseListString = `${i+1}. ${responseList[i].title} ราคา ${Math.round((responseList[i].salePrice * 33.72)* 1)}฿ ราคาเต็ม ${Math.round((responseList[i].normalPrice * 33.72)* 1)}฿ (ราคาคร่าวๆ)\n
+              // `
+              msg.channel.send({ embeds: [embedTextReturn(rArray[i])] });
+            }
           }
-
         // return;
         }).catch(function (error) {
           // handle error
@@ -69,8 +69,7 @@ client.on("messageCreate", async (msg) => {
       // break;
     default:
       if (text.toLowerCase() == '!ping') {
-        const randomColor = Math.floor(Math.random()*16777215).toString(16);
-        let pingText = new MessageEmbed().setColor(randomColor).setTitle(`Ping => ${client.ws.ping}ms ${client.ws.ping < 50 ? ' 💚': client.ws.ping > 100 ? ' ❤' : ' 🧡'}`);
+        let pingText = new MessageEmbed().setColor(randomColor()).setTitle(`Ping => ${client.ws.ping}ms ${client.ws.ping < 50 ? ' 💚': client.ws.ping > 100 ? ' ❤' : ' 🧡'}`);
         msg.channel.send({ embeds: [pingText] });
       } else if (
         (HaveDot >= 0) && (text.search(/(http)|(www)|(\d\.)/g) < 0)
@@ -98,24 +97,44 @@ getYTList = (msg, limit) => {
 getGamePrice = (params) => {
   return axios.get('https://www.cheapshark.com/api/1.0/deals', {
     params: params
-  })
+  });
+}
+getSteamGameList = () => {
+  return axios.get('https://api.steampowered.com/ISteamApps/GetAppList/v2/');
+}
+getSteamGameDetail = (id) => {
+  return axios.get(`https://store.steampowered.com/api/appdetails?appids=${id}&cc=th&l=th`);
 }
 embedTextReturn = (data) => {
-  return new MessageEmbed()
-	.setColor('#ffffff')
-	.setTitle(data.title)
-	.setURL('https://www.cheapshark.com/redirect?dealID=' + data.dealID)
-	.setAuthor('cheapshark', 'https://www.cheapshark.com/img/logo_image.png', 'https://www.cheapshark.com')
+  getSteamGameDetail(data.appid).then(function (response) {
+    console.log(response);
+    return new MessageEmbed()
+    .setColor(randomColor())
+    .setTitle(data.name)
+    .setDescription('Some description here')
+  }).catch(function (error) {
+    // handle error
+    console.log(error);
+  });
+	// .setURL('https://www.cheapshark.com/redirect?dealID=' + data.dealID)
+	// .setAuthor('cheapshark', 'https://www.cheapshark.com/img/logo_image.png', 'https://www.cheapshark.com')
 	// .setDescription('Some description here')
-	.setThumbnail(data.thumb)
-	.addFields(
-		{ name: 'ราคา', value: `${Math.round((data.salePrice * 33.72)* 1)} ฿` },
-		{ name: 'ราคาเต็ม', value: `${Math.round((data.normalPrice * 33.72)* 1)} ฿` },
-		// { name: 'Inline field title', value: 'Some value here', inline: true },
-		// { name: 'Inline field title', value: 'Some value here', inline: true },
-	)
+	// .setThumbnail(data.thumb)
+	// .addFields(
+	// 	{ name: 'ราคา', value: `${Math.round((data.salePrice * 33.72)* 1)} ฿` },
+	// 	{ name: 'ราคาเต็ม', value: `${Math.round((data.normalPrice * 33.72)* 1)} ฿` },
+	// 	// { name: 'Inline field title', value: 'Some value here', inline: true },
+	// 	// { name: 'Inline field title', value: 'Some value here', inline: true },
+	// )
 	// .addField('Inline field title', 'Some value here', true)
 	// .setImage('https://i.imgur.com/AfFp7pu.png')
 	// .setTimestamp()
 	// .setFooter('Some footer text here', 'https://i.imgur.com/AfFp7pu.png');
+}
+filterItems = (needle, heystack) => {
+  let query = needle.toLowerCase();
+  return heystack.filter(item => item.name.toLowerCase().indexOf(query) >= 0);
+}
+randomColor = () => {
+  return Math.floor(Math.random()*16777215).toString(16);
 }
