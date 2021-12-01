@@ -16,15 +16,18 @@ client.on("messageCreate", async (msg) => {
   const text = msg.content;
   let HaveDot = text.search(/[.]/g);
   let splitText = text.split(' ');
+  let limit = 5;
   switch (splitText[0]) {
     case '!yt':
       if (!!text.split('!yt ')[1]) {
         let cleanText = text.split('!yt ')[1];
-      getYTList(cleanText).then(function (response) {
+        if (splitText[splitText.length - 1].startsWith('--')) {
+          limit = splitText[splitText.length - 1].split('--')[1];
+        }
+      getYTList(cleanText, limit).then(function (response) {
           // handle success
           let responseList = response.data.items;
           let responseListString = '';
-          console.log(responseList);
           for (let i = 0; i <responseList.length; i++) {
             responseListString = responseListString + `https://youtu.be/${responseList[i].id.videoId}\n`
           }
@@ -88,8 +91,8 @@ client.login(process.env.TOKEN);
 RandomNumbers = (maxNumber) => {
  return Math.floor(Math.random() * maxNumber)
 };
-getYTList = (msg) => {
-  let path = encodeURI(`https://www.googleapis.com/youtube/v3/search?key=AIzaSyAfwXKluq4wVTQe2YYjTdJo_BPJuJl2_7g&part=snippet&q=${msg}`);
+getYTList = (msg, limit) => {
+  let path = encodeURI(`https://www.googleapis.com/youtube/v3/search?key=AIzaSyAfwXKluq4wVTQe2YYjTdJo_BPJuJl2_7g&maxResults=${limit}&type=video&part=snippet&q=${msg}`);
   return axios.get(path);
 };
 getGamePrice = (params) => {
@@ -103,7 +106,7 @@ embedTextReturn = (data) => {
 	.setTitle(data.title)
 	.setURL('https://www.cheapshark.com/redirect?dealID=' + data.dealID)
 	.setAuthor('cheapshark', 'https://www.cheapshark.com/img/logo_image.png', 'https://www.cheapshark.com')
-	.setDescription('Some description here')
+	// .setDescription('Some description here')
 	.setThumbnail(data.thumb)
 	.addFields(
 		{ name: 'ราคา', value: `${Math.round((data.salePrice * 33.72)* 1)} ฿` },
