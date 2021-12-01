@@ -26,7 +26,7 @@ client.on("messageCreate", async (msg) => {
           let responseListString = '';
           // console.log(responseList);
           for (let i = 0; i <responseList.length; i++) {
-            responseListString = responseListString + `${i+1}. https://youtu.be/${responseList[i].id.videoId}\n`
+            responseListString = responseListString + `https://youtu.be/${responseList[i].id.videoId}\n`
           }
           msg.reply(responseListString);
         }).catch(function (error) {
