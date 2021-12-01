@@ -61,8 +61,15 @@ client.on("messageCreate", async (msg) => {
         })
       }
       break
+      // case '!ping': 
+
+      // break;
     default:
-      if (
+      if (text.toLowerCase() == '!ping') {
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
+        let pingText = new MessageEmbed().setColor(randomColor).setTitle(`Ping => ${client.ws.ping}ms ${client.ws.ping < 50 ? ' 💚': client.ws.ping > 100 ? ' ❤' : ' 🧡'}`);
+        msg.channel.send({ embeds: [pingText] });
+      } else if (
         (HaveDot >= 0) && (text.search(/(http)|(www)|(\d\.)/g) < 0)
       ) {
         msg.react("🖕");
