@@ -24,7 +24,7 @@ client.on("messageCreate", async (msg) => {
           // handle success
           let responseList = response.data.items;
           let responseListString = '';
-          // console.log(responseList);
+          console.log(responseList);
           for (let i = 0; i <responseList.length; i++) {
             responseListString = responseListString + `https://youtu.be/${responseList[i].id.videoId}\n`
           }
