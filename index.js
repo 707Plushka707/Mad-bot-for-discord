@@ -25,27 +25,10 @@ client.on("messageCreate", async (msg) => {
           let responseList = response.data.items;
           let responseListString = '';
           // console.log(responseList);
-          let textz = new MessageEmbed();
           for (let i = 0; i <responseList.length; i++) {
-          textz.setColor('#ffffff')
-          .setTitle(responseList[i].snippet.title)
-          .setURL(`https://www.youtube.com/watch?v=${responseList[i].id.videoId}`)
-          // .setAuthor('cheapshark', 'https://www.cheapshark.com/img/logo_image.png', 'https://www.cheapshark.com')
-          .setDescription(responseList[i].snippet.description)
-
-          // .setThumbnail(responseList[i].snippet.thumbnails.high.url)
-          // .addField('Link', `https://www.youtube.com/watch?v=${responseList[i].id.videoId}`, true)
-          .setImage(responseList[i].snippet.thumbnails.high.url)
-          // .setTimestamp()
-          // .setFooter('Some footer text here', 'https://i.imgur.com/AfFp7pu.png');
-            // textz.addFields(
-            //   { name: 'ราคา', value: `${Math.round((data.salePrice * 33.72)* 1)} ฿` },
-            //   { name: 'ราคาเต็ม', value: `${Math.round((data.normalPrice * 33.72)* 1)} ฿` },
-            //   // { name: 'Inline field title', value: 'Some value here', inline: true },
-            //   // { name: 'Inline field title', value: 'Some value here', inline: true },
-            // )
-            msg.channel.send({ embeds: [textz] });
+            responseListString = responseListString + `${i+1}. https://youtu.be/${responseList[i].id.videoId}\n`
           }
+          msg.reply(responseListString);
         }).catch(function (error) {
           // handle error
           console.log(error);
