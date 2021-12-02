@@ -36,9 +36,7 @@ const Quote = sequelize.define(
       allowNull: false,
     },
   },
-  {
-    // Other model options go here
-  }
+  {}
 );
 
 export { sequelize, Quote };
