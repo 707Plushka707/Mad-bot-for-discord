@@ -1,24 +1,33 @@
 import { Client, Intents, MessageEmbed } from "discord.js";
 import { config } from "dotenv";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import axios from "axios";
 const { get } = axios;
-import { Quote, sequelize } from "./db.js";
+import { sequelize } from "./db.js";
 import { zenGetRandom } from "./zenquotes.js";
+
+import {
+  generateDependencyReport,
+  joinVoiceChannel,
+  VoiceConnectionStatus,
+  StreamType,
+  createAudioResource,
+  createAudioPlayer,
+  getVoiceConnection,
+} from "@discordjs/voice";
 
 config();
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_VOICE_STATES,
+  ],
 });
-
-async function testDB() {
-  try {
-    await sequelize.authenticate();
-    console.log("Database connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-}
 
 client.on("ready", () => {
   console.log("BOT is running");
@@ -99,6 +108,25 @@ client.on("messageCreate", async (msg) => {
       const response = await zenGetRandom();
       const formattedResponse = `${response.q} -- ${response.a}`;
       msg.reply(formattedResponse);
+      break;
+    case "!sing":
+      voiceActivity(msg);
+      break;
+    case "!stfu":
+      const connection = getVoiceConnection(msg.guild.id);
+      if (!connection) {
+        msg.reply("ต้องการอะไรจากสังคม?");
+        return;
+      }
+      const subscription = connection.subscribe(player);
+
+      if (subscription) {
+        setTimeout(() => {
+          player.stop();
+          subscription.unsubscribe();
+          connection.destroy();
+        }, 3_000);
+      }
     default:
       if (text.toLowerCase() == "!ping") {
         let pingText = new MessageEmbed()
@@ -128,6 +156,38 @@ client.on("messageCreate", async (msg) => {
   }
 });
 client.login(process.env.TOKEN);
+
+const voiceActivity = (msg) => {
+  const connection = joinVoiceChannel({
+    channelId: msg.member.voice.channel.id,
+    guildId: msg.guild.id,
+    adapterCreator: msg.guild.voiceAdapterCreator,
+  });
+
+  let resource = createAudioResource(join(__dirname, "audio/thai.ogg"), {
+    inputType: StreamType.OggOpus,
+  });
+  player.play(resource);
+
+  connection.on(VoiceConnectionStatus.Ready, (oldState, newState) => {
+    console.log("Connection is in the Ready state!");
+    connection.subscribe(player);
+  });
+
+  return connection;
+};
+
+const player = createAudioPlayer();
+
+async function testDB() {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connection has been established successfully.");
+    console.log(generateDependencyReport());
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+}
 
 const RandomNumbers = (maxNumber) => {
   return Math.floor(Math.random() * maxNumber);
