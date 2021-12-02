@@ -158,6 +158,10 @@ client.on("messageCreate", async (msg) => {
 client.login(process.env.TOKEN);
 
 const voiceActivity = (msg) => {
+  if (!msg.member?.voice?.channel?.id) {
+    msg.reply("เข้า Voice chat ก่อนดิ๊");
+    return;
+  }
   const connection = joinVoiceChannel({
     channelId: msg.member.voice.channel.id,
     guildId: msg.guild.id,
