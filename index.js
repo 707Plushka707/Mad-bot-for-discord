@@ -13,7 +13,7 @@ client.on("ready", () => {
 client.on("messageCreate", async (msg) => {
   const textArr = ["ควย", "เหี้ย", "ทำเหี้ย", "ทำส้นตีน", "ทำมะเขือ", "ทำสากกะเบือ"];
   const AddOnText = ['', 'นักหนา', 'วะ'];
-  const text = msg.content;
+  const text = msg.content.toLowerCase();
   let HaveDot = text.search(/[.]/g);
   let splitText = text.split(' ');
   let limit = 5;
@@ -82,6 +82,8 @@ client.on("messageCreate", async (msg) => {
         return;
       }
       break;
+  
+
   }
 
 });
