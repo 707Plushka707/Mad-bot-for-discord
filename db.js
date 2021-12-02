@@ -32,7 +32,7 @@ const Quote = sequelize.define(
       unique: "compositeIndex",
     },
     h: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
