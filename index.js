@@ -127,16 +127,17 @@ client.on("messageCreate", async (msg) => {
           connection.destroy();
         }, 3_000);
       }
-      case "!ping":
-        let pingText = new MessageEmbed()
-          .setColor(randomColor())
-          .setTitle(
-            `Ping => ${client.ws.ping}ms ${
-              client.ws.ping < 50 ? " 💚" : client.ws.ping > 100 ? " ❤" : " 🧡"
-            }`
-          );
-        msg.channel.send({ embeds: [pingText] });
-        break;
+      break;
+    case "!ping":
+      let pingText = new MessageEmbed()
+        .setColor(randomColor())
+        .setTitle(
+          `Ping => ${client.ws.ping}ms ${
+            client.ws.ping < 50 ? " 💚" : client.ws.ping > 100 ? " ❤" : " 🧡"
+          }`
+        );
+      msg.channel.send({ embeds: [pingText] });
+      break;
     default:
       if (HaveDot >= 0 && text.search(/(http)|(www)|(\d\.)/g) < 0) {
         msg.react("🖕");
@@ -168,8 +169,8 @@ const voiceActivity = (msg) => {
     guildId: msg.guild.id,
     adapterCreator: msg.guild.voiceAdapterCreator,
   });
-  let songPathArray = ["audio/thai.ogg", `audio/NSC/${RandomNumbers(1)}.mp3`];
-  let resource = createAudioResource(join(__dirname, songPathArray[RandomNumbers(1)]), {
+
+  let resource = createAudioResource(join(__dirname, "audio/thai.ogg"), {
     inputType: StreamType.OggOpus,
   });
   player.play(resource);
