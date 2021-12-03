@@ -127,8 +127,7 @@ client.on("messageCreate", async (msg) => {
           connection.destroy();
         }, 3_000);
       }
-    default:
-      if (text.toLowerCase() == "!ping") {
+      case "!ping":
         let pingText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle(
@@ -137,7 +136,9 @@ client.on("messageCreate", async (msg) => {
             }`
           );
         msg.channel.send({ embeds: [pingText] });
-      } else if (HaveDot >= 0 && text.search(/(http)|(www)|(\d\.)/g) < 0) {
+        break;
+    default:
+      if (HaveDot >= 0 && text.search(/(http)|(www)|(\d\.)/g) < 0) {
         msg.react("🖕");
         msg.reply(
           `จุด${textArr[RandomNumbers(6)]}ไร${AddOnText[RandomNumbers(3)]} <@${
