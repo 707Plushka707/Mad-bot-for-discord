@@ -168,8 +168,8 @@ const voiceActivity = (msg) => {
     guildId: msg.guild.id,
     adapterCreator: msg.guild.voiceAdapterCreator,
   });
-
-  let resource = createAudioResource(join(__dirname, "audio/thai.ogg"), {
+  let songPathArray = ["audio/thai.ogg", `audio/NSC/${RandomNumbers(1)}.mp3`];
+  let resource = createAudioResource(join(__dirname, songPathArray[RandomNumbers(1)]), {
     inputType: StreamType.OggOpus,
   });
   player.play(resource);
