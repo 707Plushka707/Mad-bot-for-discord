@@ -6,7 +6,7 @@ import { config } from 'dotenv';
 import { sequelize } from './db.js';
 import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import zenGetRandom from './zenquotes.js';
-import { randomColor, filterItems } from './utils.js';
+import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, getSteamGameDetail, embedTextReturn } from './price.js';
 
 const { get } = axios;
