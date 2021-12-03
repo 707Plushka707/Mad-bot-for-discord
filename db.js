@@ -1,6 +1,8 @@
-import pkg from "sequelize";
+import pkg from 'sequelize';
+import { config } from 'dotenv';
+
 const { Sequelize, DataTypes } = pkg;
-import { config } from "dotenv";
+
 config();
 
 const sequelize = new Sequelize(
@@ -9,12 +11,12 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    dialect: "postgres",
-  }
+    dialect: 'postgres',
+  },
 );
 
 const Quote = sequelize.define(
-  "Quote",
+  'Quote',
   {
     id: {
       primaryKey: true,
@@ -24,19 +26,19 @@ const Quote = sequelize.define(
     q: {
       type: DataTypes.TEXT,
       allowNull: false,
-      unique: "compositeIndex",
+      unique: 'compositeIndex',
     },
     a: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: "compositeIndex",
+      unique: 'compositeIndex',
     },
     h: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
   },
-  {}
+  {},
 );
 
 export { sequelize, Quote };
