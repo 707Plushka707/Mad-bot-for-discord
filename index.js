@@ -1,11 +1,12 @@
 /* eslint-disable no-underscore-dangle */
-import * as voice from '@discordjs/voice';
+import { getVoiceConnection, generateDependencyReport } from '@discordjs/voice';
 import axios from 'axios';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { config } from 'dotenv';
-import { dirname, join } from 'path';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { sequelize } from './db.js';
+import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import { zenGetRandom } from './zenquotes.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,13 +15,11 @@ const { get } = axios;
 
 config();
 
-const player = voice.createAudioPlayer();
-
-const testDB = async () => {
+const debugStatus = async () => {
   try {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
-    console.log(voice.generateDependencyReport());
+    console.log(generateDependencyReport());
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
@@ -54,33 +53,6 @@ const embedTextReturn = (data) => {
     });
 };
 
-const voiceActivity = (msg) => {
-  if (!msg.member?.voice?.channel?.id) {
-    msg.reply('เข้า Voice chat ก่อนดิ๊');
-    return null;
-  }
-  const connection = voice.joinVoiceChannel({
-    channelId: msg.member.voice.channel.id,
-    guildId: msg.guild.id,
-    adapterCreator: msg.guild.voiceAdapterCreator,
-  });
-
-  const resource = voice.createAudioResource(
-    join(__dirname, 'audio/thai.ogg'),
-    {
-      inputType: voice.StreamType.OggOpus,
-    },
-  );
-  player.play(resource);
-
-  connection.on(voice.VoiceConnectionStatus.Ready, () => {
-    console.log('Connection is in the Ready state!');
-    connection.subscribe(player);
-  });
-
-  return connection;
-};
-
 /** Main Program */
 
 const client = new Client({
@@ -93,7 +65,7 @@ const client = new Client({
 
 client.on('ready', () => {
   console.log('BOT is running');
-  testDB();
+  debugStatus();
 });
 client.on('messageCreate', async (msg) => {
   const textArr = [
@@ -105,11 +77,11 @@ client.on('messageCreate', async (msg) => {
     'ทำสากกะเบือ',
   ];
   const AddOnText = ['', 'นักหนา', 'วะ'];
-  const text = msg.content.toLowerCase();
+  const text = msg.content;
   const HaveDot = text.search(/[.]/g);
   const splitText = text.split(' ');
   let limit = 5;
-  switch (splitText[0]) {
+  switch (splitText[0].toLowerCase()) {
     case '!yt':
       if (text.split('!yt ')[1]) {
         const cleanText = text.split('!yt ')[1];
@@ -171,24 +143,21 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!sing': {
-      voiceActivity(msg);
+      let ytUrl = splitText[1];
+      if (!ytUrl) {
+        ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
+      }
+      const info = await voicePlay(voiceConnect(msg), ytUrl);
+      msg.reply(info.title);
       break;
     }
     case '!stfu': {
-      const connection = voice.getVoiceConnection(msg.guild.id);
+      const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('ต้องการอะไรจากสังคม?');
         return;
       }
-      const subscription = connection.subscribe(player);
-
-      if (subscription) {
-        setTimeout(() => {
-          player.stop();
-          subscription.unsubscribe();
-          connection.destroy();
-        }, 3_000);
-      }
+      voiceStop(connection);
       break;
     }
     case '!ping': {

@@ -36,7 +36,8 @@
     "opusscript": "^0.0.8",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.12.0-alpha.1"
+    "sequelize": "^6.12.0-alpha.1",
+    "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
     "eslint": "^8.3.0",
