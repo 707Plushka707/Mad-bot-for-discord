@@ -5,7 +5,9 @@ import { Client, Intents, MessageEmbed } from 'discord.js';
 import { config } from 'dotenv';
 import { sequelize } from './db.js';
 import { voiceConnect, voicePlay, voiceStop } from './voice.js';
-import { zenGetRandom } from './zenquotes.js';
+import zenGetRandom from './zenquotes.js';
+import { randomColor, filterItems } from './utils.js';
+import { getSteamGameList, getSteamGameDetail, embedTextReturn } from './price.js';
 
 const { get } = axios;
 
@@ -21,32 +23,11 @@ const debugStatus = async () => {
   }
 };
 
-const randomNumbers = (maxNumber) => Math.floor(Math.random() * maxNumber);
 const getYTList = (msg, limit) => {
   const path = encodeURI(
     `https://www.googleapis.com/youtube/v3/search?key=AIzaSyAfwXKluq4wVTQe2YYjTdJo_BPJuJl2_7g&maxResults=${limit}&type=video&part=snippet&q=${msg}`,
   );
   return get(path);
-};
-const filterItems = (needle, heystack) => {
-  const query = needle.toLowerCase();
-  return heystack.filter((item) => item.name.toLowerCase().indexOf(query) >= 0);
-};
-const randomColor = () => Math.floor(Math.random() * 16777215).toString(16);
-const getSteamGameList = () => get('https://api.steampowered.com/ISteamApps/GetAppList/v2/');
-const getSteamGameDetail = (id) => get(`https://store.steampowered.com/api/appdetails?appids=${id}&cc=th&l=th`);
-const embedTextReturn = (data) => {
-  getSteamGameDetail(data.appid)
-    .then((response) => {
-      console.log(response);
-      return new MessageEmbed()
-        .setColor(randomColor())
-        .setTitle(data.name)
-        .setDescription('Some description here');
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 };
 
 /** Main Program */
