@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { MessageEmbed } from 'discord.js';
-import randomColor from './utils.js';
+import { randomColor } from './utils.js';
 
 const { get } = axios;
 
