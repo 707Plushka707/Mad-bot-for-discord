@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
+import { Quote } from './db.js';
+
 const { get } = axios;
-import { Quote } from "./db.js";
 
 /**
  * Method: Get
@@ -11,7 +12,7 @@ import { Quote } from "./db.js";
  *  q: string
  * }
  */
-const zenUrlRandom = "https://zenquotes.io/api/random/";
+const zenUrlRandom = 'https://zenquotes.io/api/random/';
 
 const zenGetRandom = async () => {
   const ramdomQuote = await get(zenUrlRandom);
@@ -19,4 +20,4 @@ const zenGetRandom = async () => {
   return ramdomQuote.data[0];
 };
 
-export { zenGetRandom };
+export default zenGetRandom;

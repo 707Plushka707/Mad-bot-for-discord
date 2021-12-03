@@ -3,14 +3,10 @@ import { getVoiceConnection, generateDependencyReport } from '@discordjs/voice';
 import axios from 'axios';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { config } from 'dotenv';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { sequelize } from './db.js';
 import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import { zenGetRandom } from './zenquotes.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const { get } = axios;
 
 config();
