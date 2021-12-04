@@ -154,7 +154,7 @@ client.on('messageCreate', async (msg) => {
         .setColor(randomColor())
         .setTitle(
           `HELP for noMoreDot BOT`,
-        ).description(`นี่คือ Bot เอาไว้สำหรับด่าโดยเฉพาะ แต่ก็มีคำสั่งอื่นๆให้ใช้ด้วยเช่นกัน \n
+        ).setDescription(`นี่คือ Bot เอาไว้สำหรับด่าโดยเฉพาะ แต่ก็มีคำสั่งอื่นๆให้ใช้ด้วยเช่นกัน \n
         มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
         !ping = ทดสอบค่า ping \n
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
