@@ -7,8 +7,8 @@ import { sequelize } from './db.js';
 import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
-import { getSteamGameList, getSteamGameDetail, embedTextReturn } from './price.js';
-import { getCurrentPriceSymbol, getCurrentPriceAll } from './binance.js';
+import { getSteamGameList, embedTextReturn } from './price.js';
+import { getCurrentPriceSymbol } from './binance.js';
 
 const { get } = axios;
 
@@ -141,7 +141,7 @@ client.on('messageCreate', async (msg) => {
       const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('ต้องการอะไรจากสังคม?');
-        return;
+        return null;
       }
       voiceStop(connection);
       break;
@@ -176,7 +176,7 @@ client.on('messageCreate', async (msg) => {
       const symbol = splitText[1];
       if (!symbol) {
         msg.reply('ระบุสัญลักษณ์ด้วย เช่น !bn ETHBTC เพราะมันเยอะแสดงไม่พอ');
-        return;
+        return null;
       }
       const symbolUpper = symbol.toUpperCase();
       try {
@@ -204,7 +204,8 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.reply(`บวกหน้ามึงอะ <@${msg.author.id}>`);
       }
-      break;
+      return null;
   }
+  return null;
 });
 client.login(process.env.TOKEN);
