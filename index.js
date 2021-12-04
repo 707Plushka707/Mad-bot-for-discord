@@ -158,7 +158,7 @@ client.on('messageCreate', async (msg) => {
         มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
         !ping = ทดสอบค่า ping \n
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
-        !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
+        !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link \n เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
         !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT ]
         `);
