@@ -155,9 +155,7 @@ client.on('messageCreate', async (msg) => {
         msg.reply('ระบุสัญลักษณ์ด้วย เช่น !bn ETHBTC เพราะมันเยอะแสดงไม่พอ');
         return;
       }
-
       const symbolUpper = symbol.toUpperCase();
-
       try {
         const data = await getCurrentPriceSymbol(symbolUpper);
         msg.reply(`${symbolUpper}: ${data[symbolUpper]}`);
@@ -175,8 +173,7 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.react('🖕');
         msg.reply(
-          `จุด${textArr[randomNumbers(6)]}ไร${AddOnText[randomNumbers(3)]} <@${msg.author.id
-          }>`,
+          `จุด${textArr[randomNumbers(textArr.length())]}ไร${AddOnText[randomNumbers(AddOnText.length())]} <@${msg.author.id}>`,
         );
       } else if (
         text.search(/[+]/g) >= 0
