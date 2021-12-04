@@ -149,6 +149,22 @@ client.on('messageCreate', async (msg) => {
       msg.channel.send({ embeds: [pingText] });
       break;
     }
+    case '!help': {
+      const helpText = new MessageEmbed()
+        .setColor(randomColor())
+        .setTitle(
+          `HELP for noMoreDot BOT`,
+        ).description(`นี่คือ Bot เอาไว้สำหรับด่าโดยเฉพาะ แต่ก็มีคำสั่งอื่นๆให้ใช้ด้วยเช่นกัน \n
+        มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
+        !ping = ทดสอบค่า ping \n
+        !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
+        !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
+        !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
+        !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT ]
+        `);
+      msg.channel.send({ embeds: [helpText] });
+      break;
+    }
     case '!bn': {
       const symbol = splitText[1];
       if (!symbol) {
@@ -158,7 +174,7 @@ client.on('messageCreate', async (msg) => {
       const symbolUpper = symbol.toUpperCase();
       try {
         const data = await getCurrentPriceSymbol(symbolUpper);
-        msg.reply(`${symbolUpper}: ${data[symbolUpper]}`);
+        msg.reply(`${symbolUpper}: ${data[symbolUpper]}$`);
       } catch (e) {
         msg.reply('อย่ามามั่วสัญลักษณ์ ถ้าไม่รู้ไปดูที่ https://www.binance.com/en/markets');
         msg.react('🖕');
