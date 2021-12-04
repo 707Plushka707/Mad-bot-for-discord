@@ -8,6 +8,7 @@ import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, getSteamGameDetail, embedTextReturn } from './price.js';
+import { getCurrentPriceSymbol, getCurrentPriceAll } from './binance.js';
 
 const { get } = axios;
 
@@ -120,6 +121,7 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!sing': {
+      // !sing [ytUrl]
       let ytUrl = splitText[1];
       if (!ytUrl) {
         ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
@@ -145,6 +147,21 @@ client.on('messageCreate', async (msg) => {
           }`,
         );
       msg.channel.send({ embeds: [pingText] });
+      break;
+    }
+    case '!bn': {
+      const symbol = splitText[1];
+      if (!symbol) {
+        msg.reply('ระบุสัญลักษณ์ด้วย เช่น !bn ETHBTC เพราะมันเยอะแสดงไม่พอ');
+        return;
+      }
+      try {
+        const data = await getCurrentPriceSymbol(symbol.toUpperCase());
+        msg.reply(`${symbol}: ${data[symbol]}`);
+      } catch (e) {
+        msg.reply('อย่ามามั่วสัญลักษณ์ ถ้าไม่รู้ไปดูที่ https://www.binance.com/en/markets');
+        msg.react('🖕');
+      }
       break;
     }
     default:
