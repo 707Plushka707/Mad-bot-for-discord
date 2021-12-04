@@ -162,7 +162,7 @@ client.on('messageCreate', async (msg) => {
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
         !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link \n เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
-        !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT ]
+        !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
         `);
       msg.channel.send({ embeds: [helpText] });
       break;
