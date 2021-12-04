@@ -155,9 +155,12 @@ client.on('messageCreate', async (msg) => {
         msg.reply('ระบุสัญลักษณ์ด้วย เช่น !bn ETHBTC เพราะมันเยอะแสดงไม่พอ');
         return;
       }
+
+      const symbolUpper = symbol.toUpperCase();
+
       try {
-        const data = await getCurrentPriceSymbol(symbol.toUpperCase());
-        msg.reply(`${symbol}: ${data[symbol]}`);
+        const data = await getCurrentPriceSymbol(symbolUpper);
+        msg.reply(`${symbolUpper}: ${data[symbolUpper]}`);
       } catch (e) {
         msg.reply('อย่ามามั่วสัญลักษณ์ ถ้าไม่รู้ไปดูที่ https://www.binance.com/en/markets');
         msg.react('🖕');
