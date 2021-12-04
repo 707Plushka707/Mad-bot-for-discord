@@ -160,6 +160,7 @@ client.on('messageCreate', async (msg) => {
         มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
         !ping = ทดสอบค่า ping \n
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
+        !yt = เอาไว้ค้นหาวิดิโอใน Youtube เช่น !yt แมวเหมียว \n **!yt มี Option เพิ่มเติมคือ -- ตามด้วยตัวเลข คือการกำหนดวิดิโอที่จะแสดง มากสุด 50 วิดิโอ เช่น !yt แมว --1
         !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link \n เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
         !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
