@@ -44,7 +44,7 @@ const client = new Client({
 client.on('ready', () => {
   console.log('BOT is running');
   debugStatus();
-  client.user.setActivity('!help', ({type: "WATCHING"}))
+  client.user.setActivity('!help', ({ type: 'WATCHING' }));
 });
 
 client.on('messageCreate', async (msg) => {
@@ -129,6 +129,11 @@ client.on('messageCreate', async (msg) => {
         ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       }
       const info = await voicePlay(voiceConnect(msg), ytUrl);
+
+      if (!info) {
+        return null;
+      }
+
       msg.reply(`กำลังเล่น ${info.title}`);
       break;
     }
@@ -155,7 +160,7 @@ client.on('messageCreate', async (msg) => {
       const helpText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(
-          `HELP for noMoreDot BOT`,
+          'HELP for noMoreDot BOT',
         ).setDescription(`นี่คือ Bot เอาไว้สำหรับด่าโดยเฉพาะ แต่ก็มีคำสั่งอื่นๆให้ใช้ด้วยเช่นกัน \n
         มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
         !ping = ทดสอบค่า ping \n
