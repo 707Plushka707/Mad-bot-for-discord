@@ -191,7 +191,7 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.react('🖕');
         msg.reply(
-          `จุด${textArr[randomNumbers(textArr.length())]}ไร${AddOnText[randomNumbers(AddOnText.length())]} <@${msg.author.id}>`,
+          `จุด${textArr[randomNumbers(textArr.length)]}ไร${AddOnText[randomNumbers(AddOnText.length)]} <@${msg.author.id}>`,
         );
       } else if (
         text.search(/[+]/g) >= 0
