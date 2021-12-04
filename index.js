@@ -44,7 +44,7 @@ const client = new Client({
 client.on('ready', () => {
   console.log('BOT is running');
   debugStatus();
-  bot.user.setActivity('!help', ({type: "WATCHING"}))
+  client.user.setActivity('!help', ({type: "WATCHING"}))
 });
 
 client.on('messageCreate', async (msg) => {
