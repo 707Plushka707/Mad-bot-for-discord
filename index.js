@@ -127,7 +127,7 @@ client.on('messageCreate', async (msg) => {
         ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       }
       const info = await voicePlay(voiceConnect(msg), ytUrl);
-      msg.reply(info.title);
+      msg.reply(`กำลังเล่น ${info.title}`);
       break;
     }
     case '!stfu': {
