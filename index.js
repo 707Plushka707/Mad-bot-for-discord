@@ -7,8 +7,8 @@ import { sequelize } from './db.js';
 import { voiceConnect, voicePlay, voiceStop } from './voice.js';
 import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
-import { getSteamGameList, getSteamGameDetail, embedTextReturn } from './price.js';
-import { getCurrentPriceSymbol, getCurrentPriceAll } from './binance.js';
+import { getSteamGameList, embedTextReturn } from './price.js';
+import { getCurrentPriceSymbol } from './binance.js';
 
 const { get } = axios;
 
@@ -44,7 +44,7 @@ const client = new Client({
 client.on('ready', () => {
   console.log('BOT is running');
   debugStatus();
-  client.user.setActivity('!help', ({type: "WATCHING"}))
+  client.user.setActivity('!help', ({ type: 'WATCHING' }));
 });
 
 client.on('messageCreate', async (msg) => {
@@ -129,6 +129,11 @@ client.on('messageCreate', async (msg) => {
         ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       }
       const info = await voicePlay(voiceConnect(msg), ytUrl);
+
+      if (!info) {
+        return null;
+      }
+
       msg.reply(`กำลังเล่น ${info.title}`);
       break;
     }
@@ -136,7 +141,7 @@ client.on('messageCreate', async (msg) => {
       const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('ต้องการอะไรจากสังคม?');
-        return;
+        return null;
       }
       voiceStop(connection);
       break;
@@ -155,7 +160,7 @@ client.on('messageCreate', async (msg) => {
       const helpText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(
-          `HELP for noMoreDot BOT`,
+          'HELP for noMoreDot BOT',
         ).setDescription(`นี่คือ Bot เอาไว้สำหรับด่าโดยเฉพาะ แต่ก็มีคำสั่งอื่นๆให้ใช้ด้วยเช่นกัน \n
         มีคำสั่งหลายอย่าง และอาจมีเพิ่มในอนาคต \n
         !ping = ทดสอบค่า ping \n
@@ -172,7 +177,7 @@ client.on('messageCreate', async (msg) => {
       const symbol = splitText[1];
       if (!symbol) {
         msg.reply('ระบุสัญลักษณ์ด้วย เช่น !bn ETHBTC เพราะมันเยอะแสดงไม่พอ');
-        return;
+        return null;
       }
       const symbolUpper = symbol.toUpperCase();
       try {
@@ -192,7 +197,7 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.react('🖕');
         msg.reply(
-          `จุด${textArr[randomNumbers(textArr.length())]}ไร${AddOnText[randomNumbers(AddOnText.length())]} <@${msg.author.id}>`,
+          `จุด${textArr[randomNumbers(textArr.length)]}ไร${AddOnText[randomNumbers(AddOnText.length)]} <@${msg.author.id}>`,
         );
       } else if (
         text.search(/[+]/g) >= 0
@@ -200,7 +205,8 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.reply(`บวกหน้ามึงอะ <@${msg.author.id}>`);
       }
-      break;
+      return null;
   }
+  return null;
 });
 client.login(process.env.TOKEN);
