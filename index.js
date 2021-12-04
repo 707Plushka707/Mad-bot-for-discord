@@ -44,7 +44,9 @@ const client = new Client({
 client.on('ready', () => {
   console.log('BOT is running');
   debugStatus();
+  bot.user.setActivity('!help', ({type: "WATCHING"}))
 });
+
 client.on('messageCreate', async (msg) => {
   const textArr = [
     'ควย',
@@ -143,7 +145,7 @@ client.on('messageCreate', async (msg) => {
       const pingText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(
-          `Ping => ${client.ws.ping}ms ${client.ws.ping < 50 ? ' 💚' : client.ws.ping > 100 ? ' ❤' : ' 🧡'
+          `Ping => ${client.ws.ping}ms ${client.ws.ping < 50 ? ' 💚' : client.ws.ping > 100 ? ' 💛' : ' 🧡'
           }`,
         );
       msg.channel.send({ embeds: [pingText] });
