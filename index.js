@@ -4,16 +4,17 @@ import axios from 'axios';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { config } from 'dotenv';
 import { sequelize } from './db.js';
-import { voiceConnect, voicePlay, voiceStop } from './voice.js';
+import { voiceConnect, voicePlay, voiceStop, skipPlay, clearPlay } from './voice.js';
 import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, embedTextReturn } from './price.js';
 import { getCurrentPriceSymbol } from './binance.js';
+import ytdl from "ytdl-core";
 
 const { get } = axios;
 
 config();
-
+let musicQueue = [];
 const debugStatus = async () => {
   try {
     await sequelize.authenticate();
@@ -30,6 +31,15 @@ const getYTList = (msg, limit) => {
   );
   return get(path);
 };
+
+const getYTinfo = async (url) => {
+  const info = await ytdl.getInfo(url);
+  return {
+    title: info.videoDetails.title,
+    description: info.videoDetails.description,
+    thumbnail: info.videoDetails.thumbnails[2].url
+  }
+}
 
 /** Main Program */
 
@@ -129,27 +139,44 @@ client.on('messageCreate', async (msg) => {
       // if (!ytUrl) {
       //   ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       // }
-      let responseString = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
+      // let responseString = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       const ytSearch = text.split('!sing ')[1];
+      let info = {};
       if (text.toLowerCase().startsWith('!sing')) {
-      await getYTList(ytSearch, 1)
-          .then((response) => {
-            // handle success
-            const responseList = response.data.items;
-            responseString = `https://youtu.be/${responseList[0].id.videoId}`;
-          })
-          .catch((error) => {
-            // handle error
-            console.log(error);
-          });
+        if (ytSearch.startsWith('https') || ytSearch.startsWith('www.')) {
+          musicQueue.push(ytSearch);
+          info = await getYTinfo(ytSearch);
+        } else {
+          await getYTList(ytSearch, 1)
+            .then((response) => {
+              // handle success
+              // console.log(response);
+              const responseList = response.data.items;
+              const responseString = `https://youtu.be/${responseList[0].id.videoId}`;
+              musicQueue.push(responseString);
+              // console.log(musicQueue);
+            })
+            .catch((error) => {
+              // handle error
+              msg.reply('❌ Error สงสังค้นหาเกินโควต้าแล้ว ลองใส่เป็น Link แทนนะ ');
+              console.log(error);
+            });
+        }
       }
-      const info = await voicePlay(voiceConnect(msg), responseString);
+      if (musicQueue.length == 1) {
+        info = await voicePlay(voiceConnect(msg), musicQueue);
+      }
 
       if (!info) {
         return null;
       }
-
-      msg.reply(`กำลังเล่น ${info.title}`);
+      const descriptionText = new MessageEmbed()
+        .setColor(randomColor())
+        .setTitle(`${musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
+        .setDescription(`${musicQueue.length > 1 ? ' ' :info.description}`)
+        .setThumbnail(info.thumbnail);
+      msg.channel.send({ embeds: [descriptionText] });
+      // msg.reply(`กำลังเล่น ${info.title}`);
       break;
     }
     case '!stfu': {
@@ -159,6 +186,36 @@ client.on('messageCreate', async (msg) => {
         return null;
       }
       voiceStop(connection);
+      break;
+    }
+    case '!clear': {
+      const connection = getVoiceConnection(msg.guild.id);
+      if (!connection) {
+        msg.reply('clear เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
+        msg.react('🖕');
+      } else {
+        clearPlay(connection, musicQueue);
+        const descriptionText = new MessageEmbed()
+          .setColor(randomColor())
+          .setTitle('Clear Queue ให้แล้วจ้า 😘')
+        msg.channel.send({ embeds: [descriptionText] });
+      }
+      break;
+    }
+    case '!skip': {
+      const connection = getVoiceConnection(msg.guild.id);
+      if (!connection) {
+        msg.reply('skip เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
+        msg.react('🖕');
+      } else {
+        const info = await skipPlay(connection, musicQueue);
+        const descriptionText = new MessageEmbed()
+          .setColor(randomColor())
+          .setTitle(`กำลังเล่น ▶️ ${info.title}`)
+          .setDescription(`${info.description}`)
+          .setThumbnail(info.thumbnail);
+        msg.channel.send({ embeds: [descriptionText] });
+      }
       break;
     }
     case '!ping': {
@@ -186,6 +243,15 @@ client.on('messageCreate', async (msg) => {
         !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
         `);
       msg.channel.send({ embeds: [helpText] });
+      break;
+    }
+    case '!queue': {
+      let stringQueue = '';
+      for (let index = 0; index < musicQueue.length; index++) {
+        const element = musicQueue[index];
+        stringQueue = stringQueue + `${index == 0 ? '▶️': ''}${index + 1}. ${element}\n`;
+      }
+      msg.reply(`มีคิวเพลงตามนี้จ้า \n ${stringQueue}`);
       break;
     }
     case '!bn': {
@@ -224,4 +290,5 @@ client.on('messageCreate', async (msg) => {
   }
   return null;
 });
+
 client.login(process.env.TOKEN);

@@ -5,8 +5,8 @@ import {
   createAudioResource,
   getVoiceConnection,
   joinVoiceChannel,
-} from '@discordjs/voice';
-import ytdl from 'ytdl-core';
+} from "@discordjs/voice";
+import ytdl from "ytdl-core";
 
 const player = createAudioPlayer();
 
@@ -27,17 +27,57 @@ export const voiceConnect = (msg) => {
   return connection;
 };
 
-export const voicePlay = async (connection, link) => {
+export const clearPlay = async (connection, musicQueue) => {
   if (connection) {
-    const info = await ytdl.getInfo(link);
-    const stream = ytdl(link, { filter: 'audioonly' });
-    const resource = createAudioResource(stream, { inputType: StreamType.Arbitrary });
+    musicQueue.length = 1;
+  }
+  return null;
+};
+
+export const voicePlay = async (connection, musicQueue) => {
+  if (connection) {
+    // player.on(AudioPlayerStatus.Idle, async () => {
+    // console.log(AudioPlayerStatus);
+    console.log(musicQueue);
+    const info = await ytdl.getInfo(musicQueue[0]);
+    const stream = ytdl(musicQueue[0], { filter: 'audioonly' });
+    const resource = createAudioResource(stream, {
+      inputType: StreamType.Arbitrary,
+    });
     player.play(resource);
     connection.subscribe(player);
-    player.on(AudioPlayerStatus.Idle, () => connection.destroy());
+    player.on(AudioPlayerStatus.Idle, () => {
+      // console.log('50' + musicQueue);
+      if (musicQueue.length > 0) {
+        console.log('shift');
+        musicQueue.shift();
+        if (musicQueue.length > 0) {
+          voicePlay(connection, musicQueue)
+        } else {
+          connection.destroy();
+        }
+      } else {
+        connection.destroy();
+      }
+    });
     return {
       title: info.videoDetails.title,
+      description: info.videoDetails.description,
+      thumbnail: info.videoDetails.thumbnails[2].url
     };
+    // });
+  }
+  return null;
+};
+
+export const skipPlay = async (connection, musicQueue) => {
+  if (connection) {
+    musicQueue.shift();
+    if (musicQueue.length <= 0) {
+      connection.destroy();
+    } else {
+      return voicePlay(connection, musicQueue)
+    }
   }
   return null;
 };
