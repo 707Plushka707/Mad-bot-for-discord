@@ -56,7 +56,7 @@ client.on('messageCreate', async (msg) => {
     'ทำมะเขือ',
     'ทำสากกะเบือ',
   ];
-  const AddOnText = ['', 'นักหนา', 'วะ'];
+  const AddOnText = [' ???', 'นักหนา ??', 'วะ ?!?'];
   const text = msg.content;
   const HaveDot = text.search(/[.]/g);
   const splitText = text.split(' ');
@@ -124,11 +124,26 @@ client.on('messageCreate', async (msg) => {
     }
     case '!sing': {
       // !sing [ytUrl]
-      let ytUrl = splitText[1];
-      if (!ytUrl) {
-        ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
+
+      // let ytUrl = splitText[1];
+      // if (!ytUrl) {
+      //   ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
+      // }
+      let responseString = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
+      const ytSearch = text.split('!sing ')[1];
+      if (text.toLowerCase().startsWith('!sing')) {
+      await getYTList(ytSearch, 1)
+          .then((response) => {
+            // handle success
+            const responseList = response.data.items;
+            responseString = `https://youtu.be/${responseList[0].id.videoId}`;
+          })
+          .catch((error) => {
+            // handle error
+            console.log(error);
+          });
       }
-      const info = await voicePlay(voiceConnect(msg), ytUrl);
+      const info = await voicePlay(voiceConnect(msg), responseString);
 
       if (!info) {
         return null;
@@ -166,7 +181,7 @@ client.on('messageCreate', async (msg) => {
         !ping = ทดสอบค่า ping \n
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
         !yt = เอาไว้ค้นหาวิดิโอใน Youtube เช่น !yt แมวเหมียว \n **!yt มี Option เพิ่มเติมคือ -- ตามด้วยตัวเลข คือการกำหนดวิดิโอที่จะแสดง มากสุด 50 วิดิโอ เช่น !yt แมว --1
-        !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ link \n เช่น !sing https://www.youtube.com/watch?v=0-q1KafFCLU \n
+        !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ชื่อเพลงตาม เช่น !sing แมวเหมียว \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
         !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
         `);
