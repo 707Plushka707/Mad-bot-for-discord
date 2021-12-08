@@ -51,13 +51,17 @@ const client = new Client({
   ],
 });
 
-client.on('ready', () => {
+client.on('ready', (msg) => {
   console.log('BOT is running');
   debugStatus();
   client.user.setActivity('!help', ({ type: 'WATCHING' }));
 });
 
 client.on('messageCreate', async (msg) => {
+  const connection = getVoiceConnection(msg.guild.id);
+  if (!connection) {
+    musicQueue = [];
+  }
   const textArr = [
     'ควย',
     'เหี้ย',
@@ -150,11 +154,9 @@ client.on('messageCreate', async (msg) => {
           await getYTList(ytSearch, 1)
             .then((response) => {
               // handle success
-              // console.log(response);
               const responseList = response.data.items;
               const responseString = `https://youtu.be/${responseList[0].id.videoId}`;
               musicQueue.push(responseString);
-              // console.log(musicQueue);
             })
             .catch((error) => {
               // handle error
@@ -170,10 +172,11 @@ client.on('messageCreate', async (msg) => {
       if (!info) {
         return null;
       }
+      info = await getYTinfo(musicQueue[musicQueue.length - 1]);
       const descriptionText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(`${musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
-        .setDescription(`${musicQueue.length > 1 ? ' ' :info.description}`)
+        // .setDescription(`${musicQueue.length > 1 ? ' ' :info.description}`)
         .setThumbnail(info.thumbnail);
       msg.channel.send({ embeds: [descriptionText] });
       // msg.reply(`กำลังเล่น ${info.title}`);
@@ -185,7 +188,7 @@ client.on('messageCreate', async (msg) => {
         msg.reply('ต้องการอะไรจากสังคม?');
         return null;
       }
-      voiceStop(connection);
+      voiceStop(connection, musicQueue);
       break;
     }
     case '!clear': {
@@ -212,7 +215,7 @@ client.on('messageCreate', async (msg) => {
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle(`กำลังเล่น ▶️ ${info.title}`)
-          .setDescription(`${info.description}`)
+          // .setDescription(`${info.description}`)
           .setThumbnail(info.thumbnail);
         msg.channel.send({ embeds: [descriptionText] });
       }
@@ -239,6 +242,9 @@ client.on('messageCreate', async (msg) => {
         !quote = เอาไว้หา quote เผื่อเอาไปโพสเฟสอวดสาวได้ \n
         !yt = เอาไว้ค้นหาวิดิโอใน Youtube เช่น !yt แมวเหมียว \n **!yt มี Option เพิ่มเติมคือ -- ตามด้วยตัวเลข คือการกำหนดวิดิโอที่จะแสดง มากสุด 50 วิดิโอ เช่น !yt แมว --1
         !sing = เอาไว้เปิดเพลงโดยต้องพิมพ์ชื่อเพลงตาม เช่น !sing แมวเหมียว \n
+        !queue = เอาไว้เชคคิวเพลง \n
+        !skip = เอาไว้ skip เพลงที่เล่นอยู่ \n
+        !clear = เอาไว้เคลียร์เพลงในคิวทั้งหมดออก \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
         !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
         `);
@@ -247,11 +253,16 @@ client.on('messageCreate', async (msg) => {
     }
     case '!queue': {
       let stringQueue = '';
-      for (let index = 0; index < musicQueue.length; index++) {
-        const element = musicQueue[index];
-        stringQueue = stringQueue + `${index == 0 ? '▶️': ''}${index + 1}. ${element}\n`;
+      if (musicQueue.length > 0) {
+        for (let index = 0; index < musicQueue.length; index++) {
+          const element = musicQueue[index];
+          stringQueue = stringQueue + `${index == 0 ? '▶️': ''}${index + 1}. ${element}\n`;
+        }
+        msg.reply(`มีคิวเพลงตามนี้จ้า \n ${stringQueue}`);
+      } else {
+        msg.reply(`ไม่มีคิวเพลง ลองเพิ่มดูสักเพลงสิ ❤️`);
       }
-      msg.reply(`มีคิวเพลงตามนี้จ้า \n ${stringQueue}`);
+
       break;
     }
     case '!bn': {
