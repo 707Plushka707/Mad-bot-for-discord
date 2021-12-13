@@ -3,13 +3,15 @@ import { getVoiceConnection, generateDependencyReport } from '@discordjs/voice';
 import axios from 'axios';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { config } from 'dotenv';
+import ytdl from 'ytdl-core';
 import { sequelize } from './db.js';
-import { voiceConnect, voicePlay, voiceStop, skipPlay, clearPlay } from './voice.js';
+import {
+  voiceConnect, voicePlay, voiceStop, skipPlay, clearPlay,
+} from './voice.js';
 import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, embedTextReturn } from './price.js';
 import { getCurrentPriceSymbol } from './binance.js';
-import ytdl from "ytdl-core";
 
 const { get } = axios;
 
@@ -37,9 +39,9 @@ const getYTinfo = async (url) => {
   return {
     title: info.videoDetails.title,
     description: info.videoDetails.description,
-    thumbnail: info.videoDetails.thumbnails[2].url
-  }
-}
+    thumbnail: info.videoDetails.thumbnails[2].url,
+  };
+};
 
 /** Main Program */
 
@@ -51,14 +53,14 @@ const client = new Client({
   ],
 });
 
-client.on('ready', (msg) => {
+client.on('ready', () => {
   console.log('BOT is running');
   debugStatus();
   client.user.setActivity('!help', ({ type: 'WATCHING' }));
 });
 
 client.on('messageCreate', async (msg) => {
-  const connection = getVoiceConnection(msg.guild.id);
+  let connection = getVoiceConnection(msg.guild.id);
   if (!connection) {
     musicQueue = [];
   }
@@ -165,7 +167,7 @@ client.on('messageCreate', async (msg) => {
             });
         }
       }
-      if (musicQueue.length == 1) {
+      if (musicQueue.length === 1) {
         info = await voicePlay(voiceConnect(msg), musicQueue);
       }
 
@@ -183,7 +185,7 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!stfu': {
-      const connection = getVoiceConnection(msg.guild.id);
+      connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('ต้องการอะไรจากสังคม?');
         return null;
@@ -192,7 +194,7 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!clear': {
-      const connection = getVoiceConnection(msg.guild.id);
+      connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('clear เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
         msg.react('🖕');
@@ -200,13 +202,13 @@ client.on('messageCreate', async (msg) => {
         clearPlay(connection, musicQueue);
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
-          .setTitle('Clear Queue ให้แล้วจ้า 😘')
+          .setTitle('Clear Queue ให้แล้วจ้า 😘');
         msg.channel.send({ embeds: [descriptionText] });
       }
       break;
     }
     case '!skip': {
-      const connection = getVoiceConnection(msg.guild.id);
+      connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('skip เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
         msg.react('🖕');
@@ -254,13 +256,13 @@ client.on('messageCreate', async (msg) => {
     case '!queue': {
       let stringQueue = '';
       if (musicQueue.length > 0) {
-        for (let index = 0; index < musicQueue.length; index++) {
+        for (let index = 0; index < musicQueue.length; index += 1) {
           const element = musicQueue[index];
-          stringQueue = stringQueue + `${index == 0 ? '▶️': ''}${index + 1}. ${element}\n`;
+          stringQueue += `${index === 0 ? '▶️ ' : ''}${index + 1}. ${element}\n`;
         }
         msg.reply(`มีคิวเพลงตามนี้จ้า \n ${stringQueue}`);
       } else {
-        msg.reply(`ไม่มีคิวเพลง ลองเพิ่มดูสักเพลงสิ ❤️`);
+        msg.reply('ไม่มีคิวเพลง ลองเพิ่มดูสักเพลงสิ ❤️');
       }
 
       break;
