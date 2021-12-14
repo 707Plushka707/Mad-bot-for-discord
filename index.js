@@ -16,11 +16,16 @@ import { getCurrentPriceSymbol } from './binance.js';
 const { get } = axios;
 
 config();
-let musicQueue = [];
+
+/**  Global State */
+const globalState = {
+  musicQueue: [],
+};
+
 const debugStatus = async () => {
   try {
-    // await sequelize.authenticate();
-    // console.log('Database connection has been established successfully.');
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
     console.log(generateDependencyReport());
   } catch (error) {
     console.error('Unable to connect to the database:', error);
@@ -60,10 +65,6 @@ client.on('ready', () => {
 });
 
 client.on('messageCreate', async (msg) => {
-  let connection = getVoiceConnection(msg.guild.id);
-  if (!connection) {
-    musicQueue = [];
-  }
   const textArr = [
     'ควย',
     'เหี้ย',
@@ -77,6 +78,8 @@ client.on('messageCreate', async (msg) => {
   const HaveDot = text.search(/[.]/g);
   const splitText = text.split(' ');
   let limit = 5;
+  // splitText[0] is command
+  // splitText[1] is params
   switch (splitText[0].toLowerCase()) {
     case '!yt':
       if (text.split('!yt ')[1]) {
@@ -139,45 +142,50 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!sing': {
-      // !sing [ytUrl]
+      // !sing [ytUrl] || [ytSearchKey]
+      const connection = voiceConnect(msg);
+      if (!connection) return null;
 
-      // let ytUrl = splitText[1];
-      // if (!ytUrl) {
-      //   ytUrl = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
-      // }
-      // let responseString = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
-      const ytSearch = text.split('!sing ')[1];
-      let info = {};
-      if (text.toLowerCase().startsWith('!sing')) {
-        if (ytSearch.startsWith('https') || ytSearch.startsWith('www.')) {
-          musicQueue.push(ytSearch);
-          info = await getYTinfo(ytSearch);
-        } else {
-          await getYTList(ytSearch, 1)
-            .then((response) => {
-              // handle success
-              const responseList = response.data.items;
-              const responseString = `https://youtu.be/${responseList[0].id.videoId}`;
-              musicQueue.push(responseString);
-            })
-            .catch((error) => {
-              // handle error
-              msg.reply('❌ Error สงสังค้นหาเกินโควต้าแล้ว ลองใส่เป็น Link แทนนะ ');
-              console.log(error);
-            });
-        }
+      let ytSearch = splitText[1];
+
+      if (!ytSearch) {
+        ytSearch = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       }
-      if (musicQueue.length === 1) {
-        info = await voicePlay(voiceConnect(msg), musicQueue);
+
+      let info;
+      if (ytSearch.startsWith('https://') || ytSearch.startsWith('www.')) {
+        globalState.musicQueue.push(ytSearch);
+        info = await getYTinfo(ytSearch);
+      } else {
+        await getYTList(ytSearch, 1)
+          .then((response) => {
+            // handle success
+            const responseList = response.data.items;
+            const responseString = `https://youtu.be/${responseList[0].id.videoId}`;
+            globalState.musicQueue.push(responseString);
+          })
+          .catch((error) => {
+            // handle error
+            msg.reply('❌ Error สงสังค้นหาเกินโควต้าแล้ว ลองใส่เป็น Link แทนนะ ');
+            console.log(error);
+          });
       }
 
       if (!info) {
+        msg.reply('แม่งเอ้ยย หาข้อมูลไม่เจออะ โทษที');
         return null;
       }
-      info = await getYTinfo(musicQueue[musicQueue.length - 1]);
+
+      /** When has one song in queue start play it or just wait queue run */
+      if (globalState.musicQueue.length === 1) {
+        await voicePlay(connection, globalState);
+      }
+
+      /** Send feednack to discord */
+      info = await getYTinfo(globalState.musicQueue[-1]);
       const descriptionText = new MessageEmbed()
         .setColor(randomColor())
-        .setTitle(`${musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
+        .setTitle(`${globalState.musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
         // .setDescription(`${musicQueue.length > 1 ? ' ' :info.description}`)
         .setThumbnail(info.thumbnail);
       msg.channel.send({ embeds: [descriptionText] });
@@ -185,22 +193,22 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!stfu': {
-      connection = getVoiceConnection(msg.guild.id);
+      const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('ต้องการอะไรจากสังคม?');
         return null;
       }
-      voiceStop(connection, musicQueue);
-      musicQueue = [];
+      voiceStop(connection, globalState);
+      globalState.musicQueue = [];
       break;
     }
     case '!clear': {
-      connection = getVoiceConnection(msg.guild.id);
+      const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('clear เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
         msg.react('🖕');
       } else {
-        clearPlay(connection, musicQueue);
+        clearPlay(connection, globalState);
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle('Clear Queue ให้แล้วจ้า 😘');
@@ -209,12 +217,12 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!skip': {
-      connection = getVoiceConnection(msg.guild.id);
+      const connection = getVoiceConnection(msg.guild.id);
       if (!connection) {
         msg.reply('skip เหี้ยไรมึงไม่ได้เปิดเพลง 🖕');
         msg.react('🖕');
       } else {
-        const info = await skipPlay(connection, musicQueue);
+        const info = await skipPlay(connection, globalState);
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle(`กำลังเล่น ▶️ ${info.title}`)
@@ -256,9 +264,9 @@ client.on('messageCreate', async (msg) => {
     }
     case '!queue': {
       let stringQueue = '';
-      if (musicQueue.length > 0) {
-        for (let index = 0; index < musicQueue.length; index += 1) {
-          const element = musicQueue[index];
+      if (globalState.musicQueue.length > 0) {
+        for (let index = 0; index < globalState.musicQueue.length; index += 1) {
+          const element = globalState.musicQueue[index];
           stringQueue += `${index === 0 ? '▶️ ' : ''}${index + 1}. ${element}\n`;
         }
         msg.reply(`มีคิวเพลงตามนี้จ้า \n ${stringQueue}`);

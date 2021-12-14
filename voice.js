@@ -5,8 +5,8 @@ import {
   createAudioResource,
   getVoiceConnection,
   joinVoiceChannel,
-} from "@discordjs/voice";
-import ytdl from "ytdl-core";
+} from '@discordjs/voice';
+import ytdl from 'ytdl-core';
 
 const player = createAudioPlayer();
 
@@ -34,43 +34,48 @@ export const clearPlay = async (connection, musicQueue) => {
   return null;
 };
 
-export const voicePlay = async (connection, musicQueue) => {
+export const voicePlay = async (connection, globalState) => {
   if (connection) {
     // player.on(AudioPlayerStatus.Idle, async () => {
     // console.log(AudioPlayerStatus);
-    console.log(musicQueue);
-    const info = await ytdl.getInfo(musicQueue[0]);
-    const stream = ytdl(musicQueue[0], { filter: 'audioonly' });
+
+    const ltg = globalState;
+
+    if (ltg.musicQueue.length <= 0) {
+      return null;
+    }
+
+    const info = await ytdl.getInfo(ltg.musicQueue[0]);
+    const stream = ytdl(ltg.musicQueue[0], { filter: 'audioonly' });
     const resource = createAudioResource(stream, {
       inputType: StreamType.Arbitrary,
     });
     player.play(resource);
     connection.subscribe(player);
     player.on(AudioPlayerStatus.Idle, () => {
-      // console.log('50' + musicQueue);
-      console.log(musicQueue.length);
-      if (musicQueue.length > 0) {
+      console.log(ltg.musicQueue.length);
+      if (ltg.musicQueue.length > 0) {
         console.log('shift');
-        musicQueue.shift();
-        console.log('after shift' + musicQueue.length);
-        if (musicQueue.length > 0) {
+        ltg.musicQueue.shift();
+        console.log(`after shift${ltg.musicQueue.length}`);
+        if (ltg.musicQueue.length > 0) {
           console.log('voicePlay');
-          voicePlay(connection, musicQueue)
+          voicePlay(connection, ltg);
         } else {
           console.log('else voicePlay');
           connection.destroy();
-          musicQueue = [];
+          ltg.musicQueue = [];
         }
       } else {
         console.log('destroy');
         connection.destroy();
-        musicQueue = [];
+        ltg.musicQueue = [];
       }
     });
     return {
       title: info.videoDetails.title,
       description: info.videoDetails.description,
-      thumbnail: info.videoDetails.thumbnails[2].url
+      thumbnail: info.videoDetails.thumbnails[2].url,
     };
     // });
   }
@@ -84,7 +89,7 @@ export const skipPlay = async (connection, musicQueue) => {
       connection.destroy();
       // musicQueue = [];
     } else {
-      return voicePlay(connection, musicQueue)
+      return voicePlay(connection, musicQueue);
     }
   }
   return null;
