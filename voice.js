@@ -48,16 +48,21 @@ export const voicePlay = async (connection, musicQueue) => {
     connection.subscribe(player);
     player.on(AudioPlayerStatus.Idle, () => {
       // console.log('50' + musicQueue);
+      console.log(musicQueue.length);
       if (musicQueue.length > 0) {
         console.log('shift');
         musicQueue.shift();
+        console.log('after shift' + musicQueue.length);
         if (musicQueue.length > 0) {
+          console.log('voicePlay');
           voicePlay(connection, musicQueue)
         } else {
+          console.log('else voicePlay');
           connection.destroy();
           musicQueue = [];
         }
       } else {
+        console.log('destroy');
         connection.destroy();
         musicQueue = [];
       }
@@ -77,7 +82,7 @@ export const skipPlay = async (connection, musicQueue) => {
     musicQueue.shift();
     if (musicQueue.length <= 0) {
       connection.destroy();
-      musicQueue = [];
+      // musicQueue = [];
     } else {
       return voicePlay(connection, musicQueue)
     }
@@ -92,7 +97,6 @@ export const voiceStop = (connection, musicQueue) => {
       player.stop();
       subscription.unsubscribe();
       connection.destroy();
-      musicQueue = []
     }, 2_000);
   }
 };

@@ -19,8 +19,8 @@ config();
 let musicQueue = [];
 const debugStatus = async () => {
   try {
-    await sequelize.authenticate();
-    console.log('Database connection has been established successfully.');
+    // await sequelize.authenticate();
+    // console.log('Database connection has been established successfully.');
     console.log(generateDependencyReport());
   } catch (error) {
     console.error('Unable to connect to the database:', error);
@@ -191,6 +191,7 @@ client.on('messageCreate', async (msg) => {
         return null;
       }
       voiceStop(connection, musicQueue);
+      musicQueue = [];
       break;
     }
     case '!clear': {
