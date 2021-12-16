@@ -27,18 +27,16 @@ export const voiceConnect = (msg) => {
   return connection;
 };
 
-export const clearPlay = async (connection, musicQueue) => {
+export const clearPlay = async (connection, globalState) => {
+  const ltg = globalState;
   if (connection) {
-    musicQueue.length = 1;
+    ltg.musicQueue.length = 1;
   }
   return null;
 };
 
 export const voicePlay = async (connection, globalState) => {
   if (connection) {
-    // player.on(AudioPlayerStatus.Idle, async () => {
-    // console.log(AudioPlayerStatus);
-
     const ltg = globalState;
 
     if (ltg.musicQueue.length <= 0) {
@@ -77,31 +75,32 @@ export const voicePlay = async (connection, globalState) => {
       description: info.videoDetails.description,
       thumbnail: info.videoDetails.thumbnails[2].url,
     };
-    // });
   }
   return null;
 };
 
-export const skipPlay = async (connection, musicQueue) => {
+export const skipPlay = async (connection, globalState) => {
+  const ltg = globalState;
   if (connection) {
-    musicQueue.shift();
-    if (musicQueue.length <= 0) {
+    ltg.musicQueue.shift();
+    if (ltg.musicQueue.length <= 0) {
       connection.destroy();
-      // musicQueue = [];
     } else {
-      return voicePlay(connection, musicQueue);
+      return voicePlay(connection, globalState);
     }
   }
   return null;
 };
 
-export const voiceStop = (connection, musicQueue) => {
+export const voiceStop = (connection, globalState) => {
   const subscription = connection.subscribe(player);
+  const ltg = globalState;
+  ltg.musicQueue = [];
   if (subscription) {
     setTimeout(() => {
       player.stop();
       subscription.unsubscribe();
       connection.destroy();
-    }, 2_000);
+    }, 1_000);
   }
 };

@@ -17,7 +17,9 @@ const { get } = axios;
 
 config();
 
-/**  Global State */
+/**  Global State
+ *  musicQueue: URL
+*/
 const globalState = {
   musicQueue: [],
 };
@@ -152,10 +154,9 @@ client.on('messageCreate', async (msg) => {
         ytSearch = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
       }
 
-      let info;
+      // Youtube URL handle
       if (ytSearch.startsWith('https://') || ytSearch.startsWith('www.')) {
         globalState.musicQueue.push(ytSearch);
-        info = await getYTinfo(ytSearch);
       } else {
         await getYTList(ytSearch, 1)
           .then((response) => {
@@ -171,25 +172,18 @@ client.on('messageCreate', async (msg) => {
           });
       }
 
-      if (!info) {
-        msg.reply('แม่งเอ้ยย หาข้อมูลไม่เจออะ โทษที');
-        return null;
-      }
-
       /** When has one song in queue start play it or just wait queue run */
       if (globalState.musicQueue.length === 1) {
         await voicePlay(connection, globalState);
       }
 
       /** Send feednack to discord */
-      info = await getYTinfo(globalState.musicQueue[-1]);
+      const info = await getYTinfo(globalState.musicQueue[-1]);
       const descriptionText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(`${globalState.musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
-        // .setDescription(`${musicQueue.length > 1 ? ' ' :info.description}`)
         .setThumbnail(info.thumbnail);
       msg.channel.send({ embeds: [descriptionText] });
-      // msg.reply(`กำลังเล่น ${info.title}`);
       break;
     }
     case '!stfu': {
@@ -226,7 +220,6 @@ client.on('messageCreate', async (msg) => {
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle(`กำลังเล่น ▶️ ${info.title}`)
-          // .setDescription(`${info.description}`)
           .setThumbnail(info.thumbnail);
         msg.channel.send({ embeds: [descriptionText] });
       }
@@ -273,7 +266,6 @@ client.on('messageCreate', async (msg) => {
       } else {
         msg.reply('ไม่มีคิวเพลง ลองเพิ่มดูสักเพลงสิ ❤️');
       }
-
       break;
     }
     case '!bn': {
