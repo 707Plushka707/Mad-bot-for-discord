@@ -178,7 +178,7 @@ client.on('messageCreate', async (msg) => {
       }
 
       /** Send feednack to discord */
-      const info = await getYTinfo(globalState.musicQueue[-1]);
+      const info = await getYTinfo(globalState.musicQueue.at(-1));
       const descriptionText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(`${globalState.musicQueue.length > 1 ? 'เพิ่มลงคิว 😊' : 'กำลังเล่น ▶️'}  ${info.title}`)
@@ -217,6 +217,11 @@ client.on('messageCreate', async (msg) => {
         msg.react('🖕');
       } else {
         const info = await skipPlay(connection, globalState);
+        if (!info) {
+          msg.reply('ไม่มีเพลงให้เล่นละ บรัย 👋');
+          msg.react('🖕');
+          return null;
+        }
         const descriptionText = new MessageEmbed()
           .setColor(randomColor())
           .setTitle(`กำลังเล่น ▶️ ${info.title}`)

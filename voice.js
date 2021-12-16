@@ -60,12 +60,10 @@ export const voicePlay = async (connection, globalState) => {
           console.log('voicePlay');
           voicePlay(connection, ltg);
         } else {
-          console.log('else voicePlay');
           connection.destroy();
           ltg.musicQueue = [];
         }
       } else {
-        console.log('destroy');
         connection.destroy();
         ltg.musicQueue = [];
       }
@@ -85,9 +83,9 @@ export const skipPlay = async (connection, globalState) => {
     ltg.musicQueue.shift();
     if (ltg.musicQueue.length <= 0) {
       connection.destroy();
-    } else {
-      return voicePlay(connection, globalState);
+      return null;
     }
+    return voicePlay(connection, globalState);
   }
   return null;
 };
