@@ -292,26 +292,27 @@ client.on('messageCreate', async (msg) => {
       break;
     }
     case '!apex': {
-        const getApi = await getApexMapRotation();
-        const data = getApi.data;
-          const MapTextTitle = new MessageEmbed()
-          .setColor(randomColor())
-          .setTitle(
-            'APEX MAP ROTATION',
-          )
-          .setImage(data.battle_royale.current.asset).addFields(
-            { name: 'Battle Royale', value: `Battle Royale Ranked : ${data.ranked.current.map}` },
-            { name: 'Current', value: `${data.battle_royale.current.map} ⏱️ ${data.battle_royale.current.remainingTimer} Hr.`, inline: true },
-            { name: 'Next', value: `${data.battle_royale.next.map} ⏱️ ${data.battle_royale.next.DurationInMinutes / 60} Hr.`, inline: true },
-            { name: '\u200B', value: '\u200B' },
-            { name: 'Arenas', value: `Arenas Ranked : ${data.arenasRanked.current.map} ⏱️ ${data.arenasRanked.current.remainingTimer} Hr.` },
-            { name: 'Current', value: `${data.arenas.current.map} ⏱️ ${data.arenas.current.remainingTimer} Hr.`, inline: true },
-            { name: 'Next', value: `${data.arenas.next.map} ⏱️ ${data.arenas.next.DurationInMinutes / 60} Hr.`, inline: true },
-          );
-          msg.channel.send({ embeds: [MapTextTitle] });
+      const getApi = await getApexMapRotation();
+      const { data } = getApi;
+      const MapTextTitle = new MessageEmbed()
+        .setColor(randomColor())
+        .setTitle(
+          'APEX MAP ROTATION',
+        )
+        .setImage(data.battle_royale.current.asset)
+        .addFields(
+          { name: 'Battle Royale', value: `Battle Royale Ranked : ${data.ranked.current.map}` },
+          { name: 'Current', value: `${data.battle_royale.current.map} ⏱️ ${data.battle_royale.current.remainingTimer} Hr.`, inline: true },
+          { name: 'Next', value: `${data.battle_royale.next.map} ⏱️ ${data.battle_royale.next.DurationInMinutes / 60} Hr.`, inline: true },
+          { name: '\u200B', value: '\u200B' },
+          { name: 'Arenas', value: `Arenas Ranked : ${data.arenasRanked.current.map} ⏱️ ${data.arenasRanked.current.remainingTimer} Hr.` },
+          { name: 'Current', value: `${data.arenas.current.map} ⏱️ ${data.arenas.current.remainingTimer} Hr.`, inline: true },
+          { name: 'Next', value: `${data.arenas.next.map} ⏱️ ${data.arenas.next.DurationInMinutes / 60} Hr.`, inline: true },
+        );
+      msg.channel.send({ embeds: [MapTextTitle] });
       break;
     }
- /*   case '!rank': {
+    /*   case '!rank': {
       const name = splitText[1];
       if (!name) {
         msg.reply('บอกชื่อด้วยดิ ไม่บอกจะรู้มั้ยอะ ? (ใช้เป็นชื่อของ Origin นะ ของ Steam จะหาไม่เจอ ❤️)');
@@ -336,7 +337,7 @@ client.on('messageCreate', async (msg) => {
       //   );
       //   msg.channel.send({ embeds: [MapTextTitle] });
     break;
-  }*/
+  } */
     default:
       if (
         HaveDot >= 0
