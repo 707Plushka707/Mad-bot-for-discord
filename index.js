@@ -12,6 +12,7 @@ import zenGetRandom from './zenquotes.js';
 import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, embedTextReturn } from './price.js';
 import { getCurrentPriceSymbol } from './binance.js';
+import { getApexMapRotation, getApexRank } from './apex.js';
 
 const { get } = axios;
 
@@ -255,7 +256,8 @@ client.on('messageCreate', async (msg) => {
         !skip = เอาไว้ skip เพลงที่เล่นอยู่ \n
         !clear = เอาไว้เคลียร์เพลงในคิวทั้งหมดออก \n
         !stfu = เอาไว้ Disconnect Bot ออกจากช่อง \n
-        !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT
+        !bn =  เอาไว้แสดงค่าเงิน Cryptocurrency ที่ต้องการ เช่น !bn BTCUSDT \n
+        !apex = เอาไว้เช็ค MAP APEX
         `);
       msg.channel.send({ embeds: [helpText] });
       break;
@@ -289,6 +291,52 @@ client.on('messageCreate', async (msg) => {
       }
       break;
     }
+    case '!apex': {
+        const getApi = await getApexMapRotation();
+        const data = getApi.data;
+          const MapTextTitle = new MessageEmbed()
+          .setColor(randomColor())
+          .setTitle(
+            'APEX MAP ROTATION',
+          )
+          .setImage(data.battle_royale.current.asset).addFields(
+            { name: 'Battle Royale', value: `Battle Royale Ranked : ${data.ranked.current.map}` },
+            { name: 'Current', value: `${data.battle_royale.current.map} ⏱️ ${data.battle_royale.current.remainingTimer} Hr.`, inline: true },
+            { name: 'Next', value: `${data.battle_royale.next.map} ⏱️ ${data.battle_royale.next.DurationInMinutes / 60} Hr.`, inline: true },
+            { name: '\u200B', value: '\u200B' },
+            { name: 'Arenas', value: `Arenas Ranked : ${data.arenasRanked.current.map} ⏱️ ${data.arenasRanked.current.remainingTimer} Hr.` },
+            { name: 'Current', value: `${data.arenas.current.map} ⏱️ ${data.arenas.current.remainingTimer} Hr.`, inline: true },
+            { name: 'Next', value: `${data.arenas.next.map} ⏱️ ${data.arenas.next.DurationInMinutes / 60} Hr.`, inline: true },
+          );
+          msg.channel.send({ embeds: [MapTextTitle] });
+      break;
+    }
+ /*   case '!rank': {
+      const name = splitText[1];
+      if (!name) {
+        msg.reply('บอกชื่อด้วยดิ ไม่บอกจะรู้มั้ยอะ ? (ใช้เป็นชื่อของ Origin นะ ของ Steam จะหาไม่เจอ ❤️)');
+        return null;
+      }
+      const getApi = await getApexRank(name);
+      console.log(getApi);
+      // const data = getApi.data;
+      //   const MapTextTitle = new MessageEmbed()
+      //   .setColor(randomColor())
+      //   .setTitle(
+      //     'APEX MAP ROTATION',
+      //   )
+      //   .setImage(data.battle_royale.current.asset).addFields(
+      //     { name: 'Battle Royale', value: `Battle Royale Ranked : ${data.ranked.current.map}` },
+      //     { name: 'Current', value: `${data.battle_royale.current.map} ⏱️ ${data.battle_royale.current.remainingTimer} Hr.`, inline: true },
+      //     { name: 'Next', value: `${data.battle_royale.next.map} ⏱️ ${data.battle_royale.next.DurationInMinutes / 60} Hr.`, inline: true },
+      //     { name: '\u200B', value: '\u200B' },
+      //     { name: 'Arenas', value: `Arenas Ranked : ${data.arenasRanked.current.map} ⏱️ ${data.arenasRanked.current.remainingTimer} Hr.` },
+      //     { name: 'Current', value: `${data.arenas.current.map} ⏱️ ${data.arenas.current.remainingTimer} Hr.`, inline: true },
+      //     { name: 'Next', value: `${data.arenas.next.map} ⏱️ ${data.arenas.next.DurationInMinutes / 60} Hr.`, inline: true },
+      //   );
+      //   msg.channel.send({ embeds: [MapTextTitle] });
+    break;
+  }*/
     default:
       if (
         HaveDot >= 0
