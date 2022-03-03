@@ -149,7 +149,7 @@ client.on('messageCreate', async (msg) => {
       const connection = voiceConnect(msg);
       if (!connection) return null;
 
-      let ytSearch = splitText[1];
+      let ytSearch = text.split('!sing')[1];
 
       if (!ytSearch) {
         ytSearch = 'https://www.youtube.com/watch?v=YTgVDlE1HII';
