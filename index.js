@@ -355,11 +355,7 @@ client.on('messageCreate', async (msg) => {
       ) {
         msg.reply(`บวกหน้ามึงอะ <@${msg.author.id}>`);
       } else if (text.includes('ฝนตกไหม')) {
-        const descriptionText = new MessageEmbed()
-        .setColor(randomColor())
-        .setTitle(`สภาพอากาศตอนนี้ @สุวรรณภูมิ`)
-        .setImage('https://weather.tmd.go.th/svp/svp240_latest.jpg');
-      msg.channel.send({ embeds: [descriptionText] });
+        msg.channel.send('สภาพอากาศตอนนี้ @สุวรรณภูมิ', { files: ['https://weather.tmd.go.th/svp/svp240_latest.jpg'] } );
       }
       return null;
   }
