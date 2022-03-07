@@ -358,7 +358,7 @@ client.on('messageCreate', async (msg) => {
         const descriptionText = new MessageEmbed()
         .setColor(randomColor())
         .setTitle(`สภาพอากาศตอนนี้ @สุวรรณภูมิ`)
-        .setImage('https://weather.tmd.go.th/svp/svp120Loop.gif');
+        .setImage('https://weather.tmd.go.th/svp/svp240_latest.jpg');
       msg.channel.send({ embeds: [descriptionText] });
       }
       return null;
