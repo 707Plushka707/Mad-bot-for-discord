@@ -13,6 +13,7 @@ import { randomColor, filterItems, randomNumbers } from './utils.js';
 import { getSteamGameList, embedTextReturn } from './price.js';
 import { getCurrentPriceSymbol } from './binance.js';
 import { getApexMapRotation, getApexRank } from './apex.js';
+// import { getApexMapRotation, getApexRank } from './apex.js';
 
 const { get } = axios;
 
@@ -353,6 +354,12 @@ client.on('messageCreate', async (msg) => {
         && text.search(/(http)|(www)|(\d\.)/g) < 0
       ) {
         msg.reply(`บวกหน้ามึงอะ <@${msg.author.id}>`);
+      } else if (text.includes('ฝนตกไหม')) {
+        const descriptionText = new MessageEmbed()
+        .setColor(randomColor())
+        .setTitle(`สภาพอากาศตอนนี้ @สุวรรณภูมิ`)
+        .setImage('https://weather.tmd.go.th/svp/svp120Loop.gif');
+      msg.channel.send({ embeds: [descriptionText] });
       }
       return null;
   }
